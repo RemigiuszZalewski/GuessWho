@@ -59,9 +59,14 @@ namespace GuessWho.Persistence.Migrations
                     b.Property<int?>("SessionId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("SessionId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Players");
                 });
@@ -100,6 +105,9 @@ namespace GuessWho.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("NumberOfQuestions")
                         .HasColumnType("int");
 
@@ -115,11 +123,44 @@ namespace GuessWho.Persistence.Migrations
                     b.ToTable("Sessions");
                 });
 
+            modelBuilder.Entity("GuessWho.Domain.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HashedPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("GuessWho.Domain.Entities.Player", b =>
                 {
                     b.HasOne("GuessWho.Domain.Entities.Session", null)
                         .WithMany("Players")
                         .HasForeignKey("SessionId");
+
+                    b.HasOne("GuessWho.Domain.Entities.User", null)
+                        .WithMany("Players")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("GuessWho.Domain.Entities.Question", b =>
@@ -134,6 +175,11 @@ namespace GuessWho.Persistence.Migrations
                     b.Navigation("Players");
 
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("GuessWho.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Players");
                 });
 #pragma warning restore 612, 618
         }

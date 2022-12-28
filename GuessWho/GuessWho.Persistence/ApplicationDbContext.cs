@@ -8,12 +8,12 @@ namespace GuessWho.Persistence
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-
         }
 
-        DbSet<Player> Players { get; set; }
-        DbSet<Question> Questions { get; set; }
-        DbSet<Session> Sessions { get; set; }
-        DbSet<Answer> Answers { get; set; }
+        public DbSet<Player> Players { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Session> Sessions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

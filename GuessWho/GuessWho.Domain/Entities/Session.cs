@@ -13,6 +13,7 @@ namespace GuessWho.Domain.Entities
         public string SessionCode { get; set; } = string.Empty;
         public SessionState SessionState { get; set; }
         public int NumberOfQuestions { get; set; } = 10;
+        public DateTime Created { get; set; }
         public List<Question> Questions { get; set; } = new List<Question>();
         public List<Player> Players { get; set; } = new List<Player>();
     }
