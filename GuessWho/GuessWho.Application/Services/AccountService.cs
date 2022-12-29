@@ -36,7 +36,7 @@ public class AccountService : IAccountService
         return jwt;
     }
 
-    public async Task<int> RegisterAsync(RegisterRequest registerRequest)
+    public async Task<string> RegisterAsync(RegisterRequest registerRequest)
     {
         var passwordHash = _passwordHasher.HashPassword(registerRequest.Password);
 
@@ -50,6 +50,6 @@ public class AccountService : IAccountService
 
         await _userRepository.AddAsync(user);
 
-        return user.Id;
+        return _jwtGenerator.GenerateJwt(user);
     }
 }

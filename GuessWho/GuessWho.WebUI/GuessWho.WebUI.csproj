@@ -30,4 +30,9 @@
     <ProjectReference Include="..\GuessWho.Persistence\GuessWho.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ClientApp\src\app\components" />
+    <Folder Include="ClientApp\src\app\services" />
+  </ItemGroup>
+
 </Project>

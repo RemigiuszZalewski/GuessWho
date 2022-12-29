@@ -13,8 +13,7 @@ namespace GuessWho.WebUI.Controllers
             _accountService = accountService;
         }
 
-        [HttpPost]
-        [Route("/Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
             var jwt = await _accountService.LoginAsync(loginRequest);
@@ -22,8 +21,7 @@ namespace GuessWho.WebUI.Controllers
             return Ok(jwt);
         }
 
-        [HttpPost]
-        [Route("/Register")]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
             return Ok(await _accountService.RegisterAsync(registerRequest));

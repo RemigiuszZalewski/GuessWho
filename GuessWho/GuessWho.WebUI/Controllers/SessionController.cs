@@ -1,10 +1,8 @@
-﻿using GuessWho.Domain.Repositories;
-using GuessWho.Domain.Services;
+﻿using GuessWho.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuessWho.WebUI.Controllers
 {
-    [Route("controller")]
     public class SessionController : BaseController
     {
         private readonly ISessionService _sessionService;
@@ -21,7 +19,7 @@ namespace GuessWho.WebUI.Controllers
         }
 
         [HttpPatch]
-        [Route("/join")]
+        [Route("Join")]
         public async Task<ActionResult> JoinSession([FromQuery] string sessionCode, [FromQuery] int playerId)
         {
             await _sessionService.JoinSession(sessionCode, playerId);
@@ -29,7 +27,7 @@ namespace GuessWho.WebUI.Controllers
         }
 
         [HttpPatch]
-        [Route("/terminate")]
+        [Route("Terminate")]
         public async Task<IActionResult> TerminateSession(string sessionCode)
         {
             await _sessionService.TerminateSession(sessionCode);
