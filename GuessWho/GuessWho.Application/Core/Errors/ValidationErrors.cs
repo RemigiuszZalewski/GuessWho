@@ -39,7 +39,19 @@ public static class ValidationErrors
                 "Provided password does not contain any digit.");
         public static Error FirstNameIsMandatory =>
             new Error("Register.FirstNameIsMandatory", "Firstname is mandatory");
+        public static Error FirstNameIsTooShort =>
+            new Error("Register.FirstNameIsTooShort", "Firstname is too short. " +
+                                                      "FirstName has to be at least 3 characters long.");
+        public static Error FirstNameIsTooLong =>
+            new Error("Register.FirstNameIsTooLong", "Firstname is too long. " +
+                                                      "FirstName has to be at most 15 characters long.");
         public static Error LastNameIsMandatory =>
             new Error("Register.LastNameIsMandatory", "Lastname is mandatory");
+        public static Error LastNameIsTooShort =>
+            new Error("Register.LastNameIsTooShort", "Firstname is too short. " +
+                                                      "LastName has to be at least 2 characters long.");
+        public static Error LastNameIsTooLong =>
+            new Error("Register.LastNameIsTooLong", "Firstname is too long. " +
+                                                     "LastName has to be at most 15 characters long.");
     }
 }

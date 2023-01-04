@@ -11,11 +11,23 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     {
         RuleFor(x => x.FirstName).NotEmpty()
             .WithErrorCode(ValidationErrors.Register.FirstNameIsMandatory.Code)
-            .WithMessage(ValidationErrors.Register.FirstNameIsMandatory.ErrorMessage);
+            .WithMessage(ValidationErrors.Register.FirstNameIsMandatory.ErrorMessage)
+            .MinimumLength(3)
+            .WithErrorCode(ValidationErrors.Register.FirstNameIsTooShort.Code)
+            .WithMessage(ValidationErrors.Register.FirstNameIsTooShort.ErrorMessage)
+            .MaximumLength(15)
+            .WithErrorCode(ValidationErrors.Register.FirstNameIsTooLong.Code)
+            .WithMessage(ValidationErrors.Register.FirstNameIsTooLong.ErrorMessage);
         
         RuleFor(x => x.LastName).NotEmpty()
             .WithErrorCode(ValidationErrors.Register.LastNameIsMandatory.Code)
-            .WithMessage(ValidationErrors.Register.LastNameIsMandatory.ErrorMessage);
+            .WithMessage(ValidationErrors.Register.LastNameIsMandatory.ErrorMessage)
+            .MinimumLength(3)
+            .WithErrorCode(ValidationErrors.Register.LastNameIsTooShort.Code)
+            .WithMessage(ValidationErrors.Register.LastNameIsTooShort.ErrorMessage)
+            .MaximumLength(15)
+            .WithErrorCode(ValidationErrors.Register.LastNameIsTooLong.Code)
+            .WithMessage(ValidationErrors.Register.LastNameIsTooLong.ErrorMessage);
 
         RuleFor(x => x.Email)
             .NotEmpty()
