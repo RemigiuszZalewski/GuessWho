@@ -16,9 +16,7 @@ namespace GuessWho.WebUI.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            var jwt = await _accountService.LoginAsync(loginRequest);
-
-            return Ok(jwt);
+            return Ok(await _accountService.LoginAsync(loginRequest));
         }
 
         [HttpPost("Register")]

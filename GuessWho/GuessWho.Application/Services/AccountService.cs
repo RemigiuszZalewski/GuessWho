@@ -1,4 +1,5 @@
 ﻿using GuessWho.Application.Core.Abstractions;
+using GuessWho.Domain.Dtos;
 using GuessWho.Domain.Entities;
 using GuessWho.Domain.Repositories;
 using GuessWho.Domain.Requests;
@@ -20,7 +21,7 @@ public class AccountService : IAccountService
         _userRepository = userRepository;
     }
     
-    public async Task<string> LoginAsync(LoginRequest loginRequest)
+    public async Task<UserDto> LoginAsync(LoginRequest loginRequest)
     {
         var user = await _userRepository.GetByEmailAsync(loginRequest.Email);
 
@@ -33,10 +34,15 @@ public class AccountService : IAccountService
 
         var jwt = _jwtGenerator.GenerateJwt(user);
 
-        return jwt;
+        return new UserDto
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Token = jwt
+        };
     }
 
-    public async Task<string> RegisterAsync(RegisterRequest registerRequest)
+    public async Task<UserDto> RegisterAsync(RegisterRequest registerRequest)
     {
         var passwordHash = _passwordHasher.HashPassword(registerRequest.Password);
 
@@ -49,7 +55,14 @@ public class AccountService : IAccountService
         };
 
         await _userRepository.AddAsync(user);
+        
+        var jwt = _jwtGenerator.GenerateJwt(user);
 
-        return _jwtGenerator.GenerateJwt(user);
+        return new UserDto
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Token = jwt
+        };
     }
 }
