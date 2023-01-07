@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  web_api:
+    image: guess_who_backend
+    container_name: guess_who_backend
+    ports:
+      - "8080:80"
+    depends_on:
+       - sql
+    restart: on-failure
+  sql:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: guess_who_sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=y
+      - SA_PASSWORD=A&VeryComplex123Password
+  web_app:
+    image: guess_who_frontend
+    container_name: guess_who_frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - web_api
+    environment:
+      - BASE_URL=http://localhost:8080/api
