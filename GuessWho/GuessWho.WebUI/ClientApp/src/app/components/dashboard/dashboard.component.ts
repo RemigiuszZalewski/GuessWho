@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {AccountService} from "../../services/account.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -6,10 +7,21 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  userName = '';
 
-  constructor() { }
+  constructor(private accountService: AccountService) { }
 
   ngOnInit(): void {
+    this.userName = this.getUser();
   }
 
+  getUser() {
+    let fullName = localStorage.getItem('fullName');
+
+    if (fullName === null) {
+      return '';
+    }
+
+    return fullName;
+  }
 }

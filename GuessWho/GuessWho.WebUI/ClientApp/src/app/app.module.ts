@@ -12,6 +12,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HomeComponent } from './components/home/home.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AuthInterceptor} from "./shared/auth.interceptor";
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +23,10 @@ import {AuthInterceptor} from "./shared/auth.interceptor";
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
-    HomeComponent
+    HomeComponent,
+    ForgotPasswordComponent,
+    ChangePasswordComponent,
+    ResetPasswordComponent
   ],
     imports: [
         BrowserModule,

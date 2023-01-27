@@ -5,6 +5,7 @@ using FluentValidation.AspNetCore;
 using GuessWho.Application.Core.Abstractions;
 using GuessWho.Application.Core.Validations;
 using GuessWho.Application.Generators;
+using GuessWho.Application.Options;
 using GuessWho.Application.Services;
 using GuessWho.Application.Validators;
 using GuessWho.Domain.Generators;
@@ -31,10 +32,16 @@ builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator
 builder.Services.AddFluentValidationAutoValidation();
 
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer
-    (builder.Configuration.GetConnectionString("DbConnectionString")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnectionString"));
+    // var databaseProvider = builder.Configuration.GetValue(typeof(string), "DatabaseProvider");
+    // options.UseSqlServer
+    //     (builder.Configuration.GetConnectionString("DbConnectionString"));
+});
 
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SettingsKey));
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.OptionsKey));
+builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection(EmailOptions.OptionsKey));
 
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
@@ -42,7 +49,12 @@ builder.Services.AddScoped<ISessionCodeGenerator, SessionCodeGenerator>();
 builder.Services.AddScoped<ISessionValidator, SessionValidator>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IStringHasher, StringHasher>();
+
+builder.Services.AddCors(p => p.AddPolicy("CORS", opt =>
+{
+    opt.WithOrigins("https://gueswho.fly.dev").WithOrigins("https://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+}));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
@@ -58,28 +70,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
+builder.Services.AddScoped<IEmailGenerator, EmailGenerator>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("GuessWhoCorsPolicy", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
-    });
-});
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IResetPasswordTokenRepository, ResetPasswordTokenRepository>();
 
 var app = builder.Build();
 
-using var context = app.Services.GetService<ApplicationDbContext>();
-
-await context?.Database.MigrateAsync();
+using var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+await context.Database.MigrateAsync();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseCors("CORS");
 
-app.UseCors("GuessWhoCorsPolicy");
+app.UseAuthentication();
 
 app.UseAuthorization();
 

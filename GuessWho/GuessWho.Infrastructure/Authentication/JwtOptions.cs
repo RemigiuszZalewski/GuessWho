@@ -2,7 +2,7 @@
 
 public class JwtOptions
 {
-    public const string SettingsKey = "JwtOptions";
+    public const string OptionsKey = "JwtOptions";
     
     public string Issuer { get; set; }
     public string Audience { get; set; }

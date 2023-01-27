@@ -12,9 +12,10 @@ namespace GuessWho.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            return await _context.Set<T>().FindAsync(id);
+            return await _context.Set<T>().FindAsync(id)
+                   ?? throw new Exception($"Cannot find entity: {typeof(T)} with Id: {id}");
         }
 
         public async Task<IReadOnlyList<T>> GetAllListAsync()

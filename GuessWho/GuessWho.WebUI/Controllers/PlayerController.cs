@@ -1,8 +1,10 @@
 ﻿using GuessWho.Domain.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuessWho.WebUI.Controllers
 {
+    [Authorize]
     public class PlayerController : BaseController
     {
         private readonly IPlayerService _playerService;

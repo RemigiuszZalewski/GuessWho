@@ -1,6 +1,7 @@
 ﻿using GuessWho.Application.Core.Abstractions;
 using GuessWho.Domain.Dtos;
 using GuessWho.Domain.Entities;
+using GuessWho.Domain.Generators;
 using GuessWho.Domain.Repositories;
 using GuessWho.Domain.Requests;
 using GuessWho.Domain.Services;
@@ -9,23 +10,29 @@ namespace GuessWho.Application.Services;
 
 public class AccountService : IAccountService
 {
-    private readonly IPasswordHasher _passwordHasher;
+    private readonly IStringHasher _stringHasher;
     private readonly IJwtGenerator _jwtGenerator;
+    private readonly IEmailGenerator _emailGenerator;
+    private readonly IEmailService _emailService;
     private readonly IUserRepository _userRepository;
+    private readonly IResetPasswordTokenRepository _resetPasswordTokenRepository;
 
-    public AccountService(IPasswordHasher passwordHasher, IJwtGenerator jwtGenerator,
-        IUserRepository userRepository)
+    public AccountService(IStringHasher stringHasher, IJwtGenerator jwtGenerator,
+        IEmailGenerator emailGenerator, IEmailService emailService, IUserRepository userRepository,
+        IResetPasswordTokenRepository resetPasswordTokenRepository)
     {
-        _passwordHasher = passwordHasher;
+        _stringHasher = stringHasher;
         _jwtGenerator = jwtGenerator;
+        _emailGenerator = emailGenerator;
+        _emailService = emailService;
         _userRepository = userRepository;
+        _resetPasswordTokenRepository = resetPasswordTokenRepository;
     }
     
     public async Task<UserDto> LoginAsync(LoginRequest loginRequest)
     {
         var user = await _userRepository.GetByEmailAsync(loginRequest.Email);
-
-        var passwordIsValid = _passwordHasher.HashesMatch(user.HashedPassword, loginRequest.Password);
+        var passwordIsValid = _stringHasher.HashesMatch(user.HashedPassword, loginRequest.Password);
 
         if (!passwordIsValid)
         {
@@ -36,15 +43,15 @@ public class AccountService : IAccountService
 
         return new UserDto
         {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
+            FullName = user.FirstName + " " + user.LastName,
+            UserId = user.Id,
             Token = jwt
         };
     }
 
     public async Task<UserDto> RegisterAsync(RegisterRequest registerRequest)
     {
-        var passwordHash = _passwordHasher.HashPassword(registerRequest.Password);
+        var passwordHash = _stringHasher.Hash(registerRequest.Password);
 
         var user = new User
         {
@@ -55,14 +62,47 @@ public class AccountService : IAccountService
         };
 
         await _userRepository.AddAsync(user);
-        
         var jwt = _jwtGenerator.GenerateJwt(user);
 
         return new UserDto
         {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
+            FullName = user.ToString(),
+            UserId = user.Id,
             Token = jwt
         };
+    }
+
+    public async Task ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+    {
+        var user = await _userRepository.GetByIdAsync(changePasswordRequest.UserId);
+        var oldPasswordHash = _stringHasher.Hash(changePasswordRequest.OldPassword);
+
+        if (!user.HashedPassword.Equals(oldPasswordHash))
+        {
+            throw new Exception("Old password is not correct.");
+        }
+
+        var newPasswordHash = _stringHasher.Hash(changePasswordRequest.NewPassword);
+        user.HashedPassword = newPasswordHash;
+
+        await _userRepository.UpdateAsync(user);
+    }
+
+    public async Task ResetPasswordAsync(string email)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+        var token = _stringHasher.Hash($"ResetPasswordTemporaryString+{user.Email}+{DateTime.Now}");
+
+        await _resetPasswordTokenRepository.AddAsync(new ResetPasswordToken
+        {
+            UserId = user.Id,
+            ExpirationTime = DateTime.Now.AddDays(1),
+            TokenHash = token
+        });
+        
+        var resetPasswordEmailMessage = 
+            _emailGenerator.GenerateResetPasswordEmailMessage(user.ToString(), token);
+        
+        await _emailService.SendEmailAsync(email, resetPasswordEmailMessage);
     }
 }
