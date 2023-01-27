@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {AccountService} from "../../services/account.service";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ConfirmPasswordValidator} from "../../validators/confirm-password.validator";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-register',
@@ -20,7 +21,8 @@ export class RegisterComponent implements OnInit {
 
   submitted = false;
 
-  constructor(private accountService: AccountService, private formBuilder: FormBuilder) { }
+  constructor(private accountService: AccountService, private formBuilder: FormBuilder,
+              private router: Router) { }
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -44,6 +46,7 @@ export class RegisterComponent implements OnInit {
     }
 
     this.register();
+    this.router.navigate(['/dashboard']);
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -55,6 +58,7 @@ export class RegisterComponent implements OnInit {
       this.form.get('email')?.value, this.form.get('password')?.value).subscribe({
       next: (response) => {
         localStorage.setItem('access_token', JSON.stringify(response.token));
+        localStorage.setItem('fullName', JSON.stringify(response.fullName));
       },
       error: (error) => console.log(error)
     })}

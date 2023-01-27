@@ -1,7 +1,7 @@
 ﻿namespace GuessWho.Application.Core.Abstractions;
 
-public interface IPasswordHasher
+public interface IStringHasher
 {
-    string HashPassword(string password);
+    string Hash(string password);
     bool HashesMatch(string hash, string providedPassword);
 }

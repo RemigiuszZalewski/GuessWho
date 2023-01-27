@@ -7,7 +7,7 @@ public class SessionCodeGenerator : ISessionCodeGenerator
     private const string Chars = "ABCDEFGHIJKLMNOPRSTUWXYZ0123456789!#$@_";
     private const int NumberOfCodeCharacters = 10;
 
-    private static readonly Random Random = new Random();
+    private static readonly Random Random = new();
 
     public string GenerateSessionCode()
     {

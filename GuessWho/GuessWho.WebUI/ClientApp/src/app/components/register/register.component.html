@@ -16,7 +16,7 @@
                            class="form-control form-control-lg"
                            formControlName="firstName"
                            [ngClass]="{ 'is-invalid': submitted && f['firstName'].errors }"/>
-                    <div *ngIf="submitted && f['firstName'].errors" class="alert alert-danger alert mb-2">
+                    <div *ngIf="submitted && f['firstName'].errors" class="alert alert-danger mb-2">
                       <div *ngIf="f['firstName'].errors['required']">First name is required.</div>
                       <div *ngIf="f['firstName'].errors['minlength']">Provided first name has to be at least 3 characters long.</div>
                       <div *ngIf="f['firstName'].errors['maxlength']">Provided first name has to be at most 15 characters long.</div>
@@ -29,7 +29,7 @@
                            class="form-control form-control-lg"
                            formControlName="lastName"
                            [ngClass]="{ 'is-invalid': submitted && f['lastName'].errors }"/>
-                    <div *ngIf="submitted && f['lastName'].errors" class="alert alert-danger alert mb-2">
+                    <div *ngIf="submitted && f['lastName'].errors" class="alert alert-danger mb-2">
                       <div *ngIf="f['lastName'].errors['required']">Last name is required.</div>
                       <div *ngIf="f['lastName'].errors['minlength']">Provided last name has to be at least 2 characters long.</div>
                       <div *ngIf="f['lastName'].errors['maxlength']">Provided last name has to be at most 15 characters long.</div>
@@ -42,7 +42,7 @@
                            class="form-control form-control-lg"
                            formControlName="email"
                            [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"/>
-                    <div *ngIf="submitted && f['email'].errors" class="alert alert-danger alert mb-2">
+                    <div *ngIf="submitted && f['email'].errors" class="alert alert-danger mb-2">
                       <div *ngIf="f['email'].errors['required']">Email is required.</div>
                       <div *ngIf="f['email'].errors['email']">Provided input is not an email.</div>
                     </div>
@@ -54,7 +54,7 @@
                            class="form-control form-control-lg"
                            formControlName="password"
                            [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
-                    <div *ngIf="submitted && f['password'].errors" class="alert alert-danger alert mb-2">
+                    <div *ngIf="submitted && f['password'].errors" class="alert alert-danger mb-2">
                       <div *ngIf="f['password'].errors['required']">Password is required.</div>
                     </div>
                   </div>
@@ -65,7 +65,7 @@
                            class="form-control form-control-lg"
                            formControlName="confirmPassword"
                            [ngClass]="{ 'is-invalid': submitted && f['confirmPassword'].errors }" />
-                    <div *ngIf="submitted && f['confirmPassword'].errors" class="alert alert-danger alert mb-2">
+                    <div *ngIf="submitted && f['confirmPassword'].errors" class="alert alert-danger mb-2">
                       <div *ngIf="f['confirmPassword'].errors['required']">
                         Password confirmation is required.
                       </div>

@@ -8,4 +8,9 @@ public class User
     public string Email { get; set; }
     public string HashedPassword { get; set; }
     public List<Player> Players { get; set; }
+
+    public override string ToString()
+    {
+        return FirstName + " " + LastName;
+    }
 }

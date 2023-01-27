@@ -7,4 +7,6 @@ public interface IAccountService
 {
     Task<UserDto> LoginAsync(LoginRequest loginRequest);
     Task<UserDto> RegisterAsync(RegisterRequest registerRequest);
+    Task ChangePasswordAsync(ChangePasswordRequest changePasswordRequest);
+    Task ResetPasswordAsync(string email);
 }

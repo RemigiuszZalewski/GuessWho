@@ -15,5 +15,6 @@ namespace GuessWho.Persistence
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<ResetPasswordToken> ResetPasswordTokens { get; set; }
     }
 }

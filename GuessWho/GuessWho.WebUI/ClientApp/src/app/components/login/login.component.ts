@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {AccountService} from "../../services/account.service";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ export class LoginComponent implements OnInit {
 
   submitted = false;
 
-  constructor(private accountService: AccountService, private formBuilder: FormBuilder) { }
+  constructor(private accountService: AccountService, private formBuilder: FormBuilder,
+              private router: Router) { }
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -30,7 +32,7 @@ export class LoginComponent implements OnInit {
   login() {
     this.accountService.login(this.form.get('email')?.value, this.form.get('password')?.value).subscribe({
       next: (response) => {
-        localStorage.setItem('access_token', JSON.stringify(response.token));
+        localStorage.setItem('fullName', JSON.stringify(response.fullName));
       },
       error: (error) => console.log(error)
     })}
@@ -43,6 +45,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.login();
+    this.router.navigate(['/dashboard']);
   }
 
   get f(): { [key: string]: AbstractControl } {

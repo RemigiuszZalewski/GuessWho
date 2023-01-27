@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace GuessWho.Infrastructure;
 
-public class PasswordHasher : IDisposable, IPasswordHasher
+public class StringHasher : IDisposable, IStringHasher
 {
      private const KeyDerivationPrf Prf = KeyDerivationPrf.HMACSHA256;
      private const int IterationCount = 10000;
@@ -12,9 +12,9 @@ public class PasswordHasher : IDisposable, IPasswordHasher
      private const int SaltSize = 128 / 8;
      private readonly RandomNumberGenerator _rng;
 
-     public PasswordHasher() => _rng = new RNGCryptoServiceProvider();
+     public StringHasher() => _rng = new RNGCryptoServiceProvider();
 
-     public string HashPassword(string password)
+     public string Hash(string password)
      {
          if (password is null)
          {
