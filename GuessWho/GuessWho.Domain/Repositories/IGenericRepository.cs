@@ -7,5 +7,6 @@
         Task AddAsync(T item);
         Task RemoveAsync(T item);
         Task UpdateAsync(T item);
+        Task AddRangeAsync(List<T> items);
     }
 }

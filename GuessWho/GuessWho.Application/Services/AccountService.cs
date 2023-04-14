@@ -1,7 +1,9 @@
 ﻿using GuessWho.Application.Core.Abstractions;
 using GuessWho.Domain.Dtos;
 using GuessWho.Domain.Entities;
+using GuessWho.Domain.Exceptions;
 using GuessWho.Domain.Generators;
+using GuessWho.Domain.Primitives;
 using GuessWho.Domain.Repositories;
 using GuessWho.Domain.Requests;
 using GuessWho.Domain.Services;
@@ -11,18 +13,18 @@ namespace GuessWho.Application.Services;
 public class AccountService : IAccountService
 {
     private readonly IStringHasher _stringHasher;
-    private readonly IJwtGenerator _jwtGenerator;
+    private readonly ITokenGenerator _tokenGenerator;
     private readonly IEmailGenerator _emailGenerator;
     private readonly IEmailService _emailService;
     private readonly IUserRepository _userRepository;
     private readonly IResetPasswordTokenRepository _resetPasswordTokenRepository;
 
-    public AccountService(IStringHasher stringHasher, IJwtGenerator jwtGenerator,
+    public AccountService(IStringHasher stringHasher, ITokenGenerator tokenGenerator,
         IEmailGenerator emailGenerator, IEmailService emailService, IUserRepository userRepository,
         IResetPasswordTokenRepository resetPasswordTokenRepository)
     {
         _stringHasher = stringHasher;
-        _jwtGenerator = jwtGenerator;
+        _tokenGenerator = tokenGenerator;
         _emailGenerator = emailGenerator;
         _emailService = emailService;
         _userRepository = userRepository;
@@ -36,16 +38,20 @@ public class AccountService : IAccountService
 
         if (!passwordIsValid)
         {
-            throw new Exception("Invalid username or password.");
+            throw new LoginFailedException("Invalid username or password.");
         }
 
-        var jwt = _jwtGenerator.GenerateJwt(user);
+        var jwt = _tokenGenerator.GenerateJwt(user);
+        var refreshToken = _tokenGenerator.GenerateRefreshToken();
 
+        await AssignRefreshToken(refreshToken, user);
+        
         return new UserDto
         {
             FullName = user.FirstName + " " + user.LastName,
             UserId = user.Id,
-            Token = jwt
+            AccessToken = jwt,
+            RefreshToken = refreshToken.Token
         };
     }
 
@@ -62,14 +68,26 @@ public class AccountService : IAccountService
         };
 
         await _userRepository.AddAsync(user);
-        var jwt = _jwtGenerator.GenerateJwt(user);
+        var jwt = _tokenGenerator.GenerateJwt(user);
+        var refreshToken = _tokenGenerator.GenerateRefreshToken();
+        
+        await AssignRefreshToken(refreshToken, user);
 
         return new UserDto
         {
             FullName = user.ToString(),
             UserId = user.Id,
-            Token = jwt
+            AccessToken = jwt,
+            RefreshToken = refreshToken.Token
         };
+    }
+
+    public async Task<string> RefreshTokenAsync(string refreshToken, string email)
+    {
+        var user = await _userRepository.GetByEmailAsync(email);
+        CheckRefreshToken(refreshToken, user);
+
+        return _tokenGenerator.GenerateJwt(user);
     }
 
     public async Task ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
@@ -104,5 +122,26 @@ public class AccountService : IAccountService
             _emailGenerator.GenerateResetPasswordEmailMessage(user.ToString(), token);
         
         await _emailService.SendEmailAsync(email, resetPasswordEmailMessage);
+    }
+
+    private static void CheckRefreshToken(string refreshToken, User user)
+    {
+        if (!user.RefreshToken.Equals(refreshToken))
+        {
+            throw new RefreshTokenException("Invalid refresh token has been provided.");
+        }
+
+        if (user.RefreshTokenExpirationDate < DateTimeOffset.Now)
+        {
+            throw new RefreshTokenException("Refresh token is expired.");
+        }
+    }
+
+    private async Task AssignRefreshToken(RefreshToken refreshToken, User user)
+    {
+        user.RefreshToken = refreshToken.Token;
+        user.RefreshTokenExpirationDate = refreshToken.TokenExpirationDate;
+
+        await _userRepository.UpdateAsync(user);
     }
 }

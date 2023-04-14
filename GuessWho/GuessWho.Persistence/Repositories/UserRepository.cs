@@ -1,4 +1,5 @@
 ﻿using GuessWho.Domain.Entities;
+using GuessWho.Domain.Exceptions;
 using GuessWho.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
 
         if (user is null)
         {
-            throw new Exception("Invalid user name or password.");
+            throw new NotFoundException("Invalid user name or password.");
         }
 
         return user;

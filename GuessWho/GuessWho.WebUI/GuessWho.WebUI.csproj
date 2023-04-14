@@ -11,6 +11,8 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
+    <PackageReference Include="Mapster" Version="7.3.0" />
+    <PackageReference Include="Mapster.DependencyInjection" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
@@ -28,11 +30,6 @@
     <ProjectReference Include="..\GuessWho.Application\GuessWho.Application.csproj" />
     <ProjectReference Include="..\GuessWho.Infrastructure\GuessWho.Infrastructure.csproj" />
     <ProjectReference Include="..\GuessWho.Persistence\GuessWho.Persistence.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ClientApp\src\app\components" />
-    <Folder Include="ClientApp\src\app\services" />
   </ItemGroup>
 
 </Project>
