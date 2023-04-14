@@ -17,6 +17,7 @@ using GuessWho.Infrastructure;
 using GuessWho.Infrastructure.Authentication;
 using GuessWho.Persistence;
 using GuessWho.Persistence.Repositories;
+using GuessWho.WebUI.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -34,10 +35,10 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnectionString"));
+    // options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnectionString"));
     // var databaseProvider = builder.Configuration.GetValue(typeof(string), "DatabaseProvider");
-    // options.UseSqlServer
-    //     (builder.Configuration.GetConnectionString("DbConnectionString"));
+    options.UseSqlServer
+        (builder.Configuration.GetConnectionString("DbConnectionString"));
 });
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.OptionsKey));
@@ -48,12 +49,14 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<ISessionCodeGenerator, SessionCodeGenerator>();
 builder.Services.AddScoped<ISessionValidator, SessionValidator>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IStringHasher, StringHasher>();
-
+builder.Services.AddMapster();
 builder.Services.AddCors(p => p.AddPolicy("CORS", opt =>
 {
-    opt.WithOrigins("https://gueswho.fly.dev").WithOrigins("https://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+    opt.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
 }));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -69,7 +72,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:SecurityKey"] ?? string.Empty))
     });
 
-builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
+builder.Services.AddScoped<ITokenGenerator, TokenGenerator>();
 builder.Services.AddScoped<IEmailGenerator, EmailGenerator>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -78,9 +81,9 @@ builder.Services.AddScoped<IResetPasswordTokenRepository, ResetPasswordTokenRepo
 
 var app = builder.Build();
 
-using var scope = app.Services.CreateScope();
-var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-await context.Database.MigrateAsync();
+// using var scope = app.Services.CreateScope();
+// var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+// await context.Database.MigrateAsync();
 
 app.UseSwagger();
 app.UseSwaggerUI();

@@ -13,7 +13,7 @@ public class SessionRepository : GenericRepository<Session>, ISessionRepository
         _context = context;
     }
 
-    public async Task<Session?> GetSessionBySessionCode(string sessionCode)
+    public async Task<Session> GetSessionBySessionCode(string sessionCode)
     {
         var session = await _context.Sessions.FirstOrDefaultAsync(s => s.SessionCode.Equals(sessionCode));
 

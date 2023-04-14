@@ -12,24 +12,30 @@ namespace GuessWho.Application.Services
         private readonly ISessionRepository _sessionRepository;
         private readonly IGenericRepository<Player> _playerRepository;
         private readonly ISessionCodeGenerator _sessionCodeGenerator;
+        private readonly IQuestionRepository _questionRepository;
         private readonly ISessionValidator _sessionValidator;
 
         public SessionService(ISessionRepository sessionRepository, IGenericRepository<Player> playerRepository,
-            ISessionCodeGenerator sessionCodeGenerator, ISessionValidator sessionValidator)
+            ISessionCodeGenerator sessionCodeGenerator, IQuestionRepository questionRepository,
+            ISessionValidator sessionValidator)
         {
             _sessionRepository = sessionRepository;
             _playerRepository = playerRepository;
             _sessionCodeGenerator = sessionCodeGenerator;
+            _questionRepository = questionRepository;
             _sessionValidator = sessionValidator;
         }
 
-        public async Task<string> CreateSession(int numberOfQuestions)
+        public async Task<string> CreateSession(int numberOfQuestions, string language)
         {
             var sessionCode = _sessionCodeGenerator.GenerateSessionCode();
 
+            var questions = await _questionRepository.GetQuestionsAsync(numberOfQuestions, "EN");
+            
             var session = new Session
             {
-                SessionCode = sessionCode
+                SessionCode = sessionCode,
+                Questions = questions
             };
             
             await _sessionRepository.AddAsync(session);
@@ -41,17 +47,14 @@ namespace GuessWho.Application.Services
         {
             var session = await _sessionRepository.GetSessionBySessionCode(sessionCode);
 
-            if (session is not null)
-            {
-                _sessionValidator.ValidateSessionState(session);
-                var player = await _playerRepository.GetByIdAsync(playerId);
+            _sessionValidator.ValidateSessionState(session);
+            var player = await _playerRepository.GetByIdAsync(playerId);
 
-                if (player is null)
-                    throw new Exception("Player does not exist.");
+            if (player is null)
+                throw new Exception("Player does not exist.");
                 
-                session.Players.Add(player);
-                await _sessionRepository.UpdateAsync(session);
-            }
+            session.Players.Add(player);
+            await _sessionRepository.UpdateAsync(session);
         }
 
         public async Task TerminateSession(string sessionCode)

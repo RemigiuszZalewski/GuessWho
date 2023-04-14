@@ -15,9 +15,9 @@ namespace GuessWho.WebUI.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<int>> CreateSession(int numberOfQuestions)
+        public async Task<ActionResult<int>> CreateSession(int numberOfQuestions, string language)
         {
-            return Ok(await _sessionService.CreateSession(numberOfQuestions));
+            return Ok(await _sessionService.CreateSession(numberOfQuestions, language));
         }
 
         [HttpPatch]

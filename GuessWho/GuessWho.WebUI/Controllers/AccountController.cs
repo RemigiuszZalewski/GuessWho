@@ -14,27 +14,39 @@ namespace GuessWho.WebUI.Controllers
             _accountService = accountService;
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
             return Ok(await _accountService.LoginAsync(loginRequest));
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
             return Ok(await _accountService.RegisterAsync(registerRequest));
         }
         
         [Authorize]
-        [HttpPatch("Password/Edit")]
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"] 
+                               ?? throw new Exception("No refresh token available.");
+            var email = User.Identity?.Name ??
+                         throw new Exception("No email in JWT found.");
+            
+            return Ok(await _accountService.RefreshTokenAsync(refreshToken, email));
+        }
+        
+        [Authorize]
+        [HttpPatch("password/edit")]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequest changePasswordRequest)
         {
             await _accountService.ChangePasswordAsync(changePasswordRequest);
             return Ok();
         }
         
-        [HttpPost("Password/Reset")]
+        [HttpPost("password/reset")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest)
         {
             await _accountService.ResetPasswordAsync(resetPasswordRequest.Email);

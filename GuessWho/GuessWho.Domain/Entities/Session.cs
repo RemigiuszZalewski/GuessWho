@@ -12,9 +12,9 @@ namespace GuessWho.Domain.Entities
         public int Id { get; set; }
         public string SessionCode { get; set; } = string.Empty;
         public SessionState SessionState { get; set; }
-        public int NumberOfQuestions { get; set; } = 10;
+        public int NumberOfQuestions { get; set; }
         public DateTime Created { get; set; }
-        public List<Question> Questions { get; set; } = new List<Question>();
-        public List<Player> Players { get; set; } = new List<Player>();
+        public List<Question> Questions { get; set; } = new();
+        public List<Player> Players { get; set; } = new();
     }
 }

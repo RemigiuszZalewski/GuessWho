@@ -40,5 +40,11 @@ namespace GuessWho.Persistence.Repositories
             _context.Set<T>().Update(item);
             await _context.SaveChangesAsync();
         }
+
+        public async Task AddRangeAsync(List<T> items)
+        {
+            await _context.Set<T>().AddRangeAsync(items);
+            await _context.SaveChangesAsync();
+        }
     }
 }
